@@ -1,8 +1,98 @@
 [
-  {"equipa":"Cardielos F.C. Veteranos","localidade":"Cardielos","campo":"Campo de Cardielos","responsavel":"Organização"},
-  {"equipa":"AD Ponte da Barca Veteranos","localidade":"Ponte da Barca","campo":"A definir","responsavel":""},
-  {"equipa":"Darquense Veteranos","localidade":"Darque","campo":"A definir","responsavel":""},
-  {"equipa":"Vitorino Piães Veteranos","localidade":"Vitorino dos Piães","campo":"A definir","responsavel":""},
-  {"equipa":"Anha Veteranos","localidade":"Anha","campo":"A definir","responsavel":""},
-  {"equipa":"Cerveira Veteranos","localidade":"Vila Nova de Cerveira","campo":"A definir","responsavel":""}
+  {
+    "equipa": "Cardielos F.C.",
+    "localidade": "Cardielos",
+    "campo": "Campo de Jogo dos Monçōes",
+    "responsavel": "Organização"
+  },
+  {
+    "equipa": "C.D. Cerveira",
+    "localidade": "Vila Nova de Cerveira",
+    "campo": "Estádio Rafael Pedreira",
+    "responsavel": ""
+  },
+  {
+    "equipa": "G.D.R. Campo",
+    "localidade": "Campo",
+    "campo": "Campo do G.D.R. Campo",
+    "responsavel": ""
+  },
+  {
+    "equipa": "S.C. Vianense",
+    "localidade": "Viana do Castelo",
+    "campo": "Estádio Dr. José de Matos",
+    "responsavel": ""
+  },
+  {
+    "equipa": "A.D.C. Anha",
+    "localidade": "Anha",
+    "campo": "Campo de Jogos Dr. José Alpuim (Sobrinho)",
+    "responsavel": ""
+  },
+  {
+    "equipa": "U.D. Lanheses",
+    "localidade": "Lanheses",
+    "campo": "Estádio 15 Agosto",
+    "responsavel": ""
+  },
+  {
+    "equipa": "A.D. Darquense",
+    "localidade": "Darque",
+    "campo": "Campo Sra Oliveiras",
+    "responsavel": ""
+  },
+  {
+    "equipa": "G.D. Castelense",
+    "localidade": "Castelo do Neiva",
+    "campo": "Campo Beira-Mar",
+    "responsavel": ""
+  },
+  {
+    "equipa": "A.D. Ponte da Barca",
+    "localidade": "Ponte da Barca",
+    "campo": "Estádio Municipal de Ponte da Barca",
+    "responsavel": ""
+  },
+  {
+    "equipa": "A.D.C. Correlhã",
+    "localidade": "Correlhã",
+    "campo": "Campo Municipal da Correlhã",
+    "responsavel": ""
+  },
+  {
+    "equipa": "A.C.R. Arcozelo",
+    "localidade": "Arcozelo",
+    "campo": "Campo José Maria Oliveira Pimenta",
+    "responsavel": ""
+  },
+  {
+    "equipa": "Deucriste S.C.",
+    "localidade": "Deucriste",
+    "campo": "Campo Barão São Fernando",
+    "responsavel": ""
+  },
+  {
+    "equipa": "G.D. Fragoso",
+    "localidade": "Fragoso",
+    "campo": "Campo 13 de Maio",
+    "responsavel": ""
+  },
+  {
+    "equipa": "G.D. Vitorino de Piães",
+    "localidade": "Vitorino de Piães",
+    "campo": "Campo Eng. Fernando Magalhães",
+    "responsavel": ""
+  },
+  {
+    "equipa": "Âncora-Praia F.C.",
+    "localidade": "Âncora Praia",
+    "campo": "Campo Paulino Velho Gomes",
+    "responsavel": ""
+  },
+  {
+    "equipa": "A.R.C. Guilhadeses",
+    "localidade": "Guilhadeses",
+    "campo": "A confirmar",
+    "responsavel": "Campo em falta"
+  }
 ]

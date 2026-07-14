@@ -1,3 +1,8 @@
 [
-  {"data":"2026-08-01","tipo":"Informação","titulo":"Site em preparação","texto":"A organização do campeonato está a preparar a XXXVIII Edição, época 2026/2027."}
+  {
+    "data": "2026-07-14",
+    "tipo": "Informação",
+    "titulo": "Clubes participantes atualizados",
+    "texto": "Já se encontram identificados os clubes participantes e os respetivos campos da XXXVIII Edição."
+  }
 ]
