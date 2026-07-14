@@ -1,21 +1,25 @@
-const dataPath = (name) => `data/${name}.json`;
-const fmtDate = (value) => {
-  if (!value) return "A definir";
-  const d = new Date(`${value}T12:00:00`);
-  return d.toLocaleDateString('pt-PT', { weekday:'short', day:'2-digit', month:'2-digit', year:'numeric' });
-};
-const scoreText = (j) => (j.golos_casa === null || j.golos_fora === null) ? 'vs' : `${j.golos_casa} - ${j.golos_fora}`;
-async function loadJSON(name){ const r = await fetch(dataPath(name)); if(!r.ok) throw new Error(name); return r.json(); }
-function setActiveNav(){ const page = location.pathname.split('/').pop() || 'index.html'; document.querySelectorAll('.nav-links a').forEach(a=>{ if(a.getAttribute('href')===page) a.classList.add('active'); }); }
-function setupNav(){ const nav=document.querySelector('.nav'); const btn=document.querySelector('.menu-toggle'); if(btn) btn.addEventListener('click',()=>nav.classList.toggle('open')); setActiveNav(); }
-function renderMatches(container, jogos, limit){ const list = limit ? jogos.slice(0, limit) : jogos; container.innerHTML = list.map(j=>`<div class="match-row"><div><div class="team">${j.casa}</div><div class="meta">Jornada ${j.jornada} · ${fmtDate(j.data)} · ${j.hora}</div></div><div class="score">${scoreText(j)}</div><div><div class="team">${j.fora}</div><div class="meta">${j.campo}</div></div></div>`).join(''); }
-function renderMatchMobile(container, jogos){ container.innerHTML = jogos.map(j=>`<div class="mobile-item"><h3>Jornada ${j.jornada}</h3><div class="mobile-pair"><strong>${j.casa}</strong><span>${scoreText(j)}</span><strong>${j.fora}</strong></div><div class="meta">${fmtDate(j.data)} · ${j.hora} · ${j.campo}</div><span class="pill">${j.estado}</span></div>`).join(''); }
-function renderClassificacaoTable(el, rows, top){ const list = top ? rows.slice(0, top) : rows; el.innerHTML = `<table><thead><tr><th class="num">Pos.</th><th>Equipa</th><th class="num">J</th><th class="num">V</th><th class="num">E</th><th class="num">D</th><th class="num">GM</th><th class="num">GS</th><th class="num">DG</th><th class="num">Pts</th></tr></thead><tbody>${list.map(r=>`<tr><td class="num"><span class="rank">${r.pos}</span></td><td><strong>${r.equipa}</strong></td><td class="num">${r.j}</td><td class="num">${r.v}</td><td class="num">${r.e}</td><td class="num">${r.d}</td><td class="num">${r.gm}</td><td class="num">${r.gs}</td><td class="num">${r.dg}</td><td class="num"><strong>${r.pts}</strong></td></tr>`).join('')}</tbody></table><div class="mobile-card">${list.map(r=>`<div class="mobile-item"><h3><span class="rank">${r.pos}</span> ${r.equipa}</h3><div class="mobile-pair"><span>Jogos</span><strong>${r.j}</strong></div><div class="mobile-pair"><span>V/E/D</span><strong>${r.v}/${r.e}/${r.d}</strong></div><div class="mobile-pair"><span>Golos</span><strong>${r.gm}-${r.gs}</strong></div><div class="mobile-pair"><span>Pontos</span><strong>${r.pts}</strong></div></div>`).join('')}</div>`; }
-function renderEquipas(el, equipas){ el.innerHTML = equipas.map(e=>`<div class="card team-card"><div class="team-badge">${e.equipa.charAt(0)}</div><div><h3>${e.equipa}</h3><p class="meta">${e.localidade} · ${e.campo}</p>${e.responsavel ? `<span class="pill">${e.responsavel}</span>` : ''}</div></div>`).join(''); }
-async function initHome(){ const [jogos, classificacao, comunicados] = await Promise.all([loadJSON('jogos'),loadJSON('classificacao'),loadJSON('comunicados')]); const upcoming = jogos.filter(j=>j.estado !== 'Finalizado'); const results = jogos.filter(j=>j.golos_casa !== null && j.golos_fora !== null); const prox=document.querySelector('#proxima-jornada'); if(prox) renderMatches(prox, upcoming, 3); const ult=document.querySelector('#ultimos-resultados'); if(ult) renderMatches(ult, results.length ? results.reverse() : jogos, 3); const classEl=document.querySelector('#classificacao-top'); if(classEl) renderClassificacaoTable(classEl, classificacao, 5); const com=document.querySelector('#ultimo-comunicado'); if(com && comunicados[0]) com.innerHTML=`<div class="card"><div class="card-kicker">${comunicados[0].tipo} · ${fmtDate(comunicados[0].data)}</div><h3>${comunicados[0].titulo}</h3><p>${comunicados[0].texto}</p></div>`; }
-async function initCalendario(){ const jogos = await loadJSON('jogos'); const el=document.querySelector('#calendario-list'); if(el) renderMatches(el,jogos); const mob=document.querySelector('#calendario-mobile'); if(mob) renderMatchMobile(mob,jogos); }
-async function initResultados(){ const jogos = await loadJSON('jogos'); const played = jogos.filter(j=>j.golos_casa !== null && j.golos_fora !== null); const el=document.querySelector('#resultados-list'); if(el) renderMatches(el, played.length ? played : jogos); const mob=document.querySelector('#resultados-mobile'); if(mob) renderMatchMobile(mob, played.length ? played : jogos); }
-async function initClassificacao(){ const rows = await loadJSON('classificacao'); const el=document.querySelector('#classificacao-table'); if(el) renderClassificacaoTable(el,rows); }
-async function initEquipas(){ const rows = await loadJSON('equipas'); const el=document.querySelector('#equipas-grid'); if(el) renderEquipas(el,rows); }
-setupNav();
-window.siteInit = { initHome, initCalendario, initResultados, initClassificacao, initEquipas };
+<!doctype html><html lang="pt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Equipas | Veteranos Alto Minho</title><link rel="stylesheet" href="css/style.css"></head><body><header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="index.html"><span class="brand-mark">VA</span><span>Veteranos Alto Minho</span></a>
+    <button class="menu-toggle" type="button">Menu</button>
+    <nav class="nav-links" aria-label="Navegação principal">
+      <a href="index.html">Início</a>
+      <a href="calendario.html">Calendário</a>
+      <a href="resultados.html">Resultados</a>
+      <a href="classificacao.html">Classificação</a>
+      <a href="equipas.html">Equipas</a>
+      <a href="regulamento.html">Regulamento</a>
+      <a href="contactos.html">Contactos</a>
+    </nav>
+  </div>
+</header><main><section class="page-hero"><div class="container"><span class="eyebrow">Clubes participantes</span><h1>Equipas</h1></div></section><section class="section"><div class="container grid grid-3" id="equipas-grid"></div></section></main><footer class="footer">
+  <div class="container footer-grid">
+    <div>
+      <strong>Campeonato de Veteranos do Alto Minho</strong>
+      <p>XXXVIII Edição · Época 2026/2027 · Organização: Cardielos F.C. Veteranos</p>
+    </div>
+    <div>
+      <p>Site oficial em preparação. Dados de calendário, resultados e classificação serão atualizados pela organização.</p>
+    </div>
+  </div>
+</footer><script src="js/app.js"></script><script>siteInit.initEquipas();</script></body></html>
