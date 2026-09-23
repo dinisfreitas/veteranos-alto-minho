@@ -33,7 +33,8 @@
     "equipa": "U.D. Lanheses",
     "localidade": "Lanheses",
     "campo": "Estádio 15 Agosto",
-    "responsavel": ""
+    "responsavel": "Nelson Silva",
+    "responsavel_exemplo": true
   },
   {
     "equipa": "A.D. Darquense",
@@ -51,7 +52,8 @@
     "equipa": "A.D. Ponte da Barca",
     "localidade": "Ponte da Barca",
     "campo": "Estádio Municipal de Ponte da Barca",
-    "responsavel": ""
+    "responsavel": "Vitor Rodrigues",
+    "responsavel_exemplo": true
   },
   {
     "equipa": "A.D.C. Correlhã",
