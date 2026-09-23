@@ -35,14 +35,43 @@ function sheetQuery(sheet, range) {
 }
 
 const cell = (row, index) => row.c?.[index]?.v ?? null;
+function validDate(year, month, day) {
+  const y = Number(year), m = Number(month), d = Number(day);
+  const date = new Date(Date.UTC(y, m - 1, d));
+  if (date.getUTCFullYear() !== y || date.getUTCMonth() !== m - 1 || date.getUTCDate() !== d) return null;
+  return `${String(y).padStart(4, '0')}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+}
 function dateISO(value) {
   if (typeof value === 'string') {
     const m = /^Date\((\d+),(\d+),(\d+)/.exec(value);
-    if (m) return `${m[1]}-${String(Number(m[2]) + 1).padStart(2, '0')}-${m[3].padStart(2, '0')}`;
-    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+    if (m) return validDate(m[1], Number(m[2]) + 1, m[3]);
+    const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+    if (iso) return validDate(iso[1], iso[2], iso[3]);
+    const pt = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(value);
+    if (pt) return validDate(pt[3], pt[2], pt[1]);
   }
   return null;
 }
+function timeHHMM(value) {
+  if (Array.isArray(value) && value.length >= 2) {
+    if (!Number.isInteger(value[0]) || !Number.isInteger(value[1]) || value[0] < 0 || value[0] > 23 || value[1] < 0 || value[1] > 59) return null;
+    return `${String(value[0]).padStart(2, '0')}:${String(value[1]).padStart(2, '0')}`;
+  }
+  if (typeof value === 'number' && value >= 0 && value < 1) {
+    const minutes = Math.round(value * 1440);
+    return `${String(Math.floor(minutes / 60) % 24).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
+  }
+  if (typeof value === 'string') {
+    const text = /^(\d{1,2}):(\d{2})(?::\d{2})?$/.exec(value.trim());
+    if (text && Number(text[1]) < 24 && Number(text[2]) < 60) {
+      return `${text[1].padStart(2, '0')}:${text[2]}`;
+    }
+    const date = /^Date\(\d+,\d+,\d+,(\d+),(\d+)/.exec(value);
+    if (date && Number(date[1]) < 24 && Number(date[2]) < 60) return `${date[1].padStart(2, '0')}:${date[2].padStart(2, '0')}`;
+  }
+  return null;
+}
+const gameKey = (jornada, casa, fora) => JSON.stringify([Number(jornada), String(casa).trim(), String(fora).trim()]);
 function gamesFromRows(rows, dates, secondHalf) {
   const games = [];
   for (const row of rows) {
@@ -54,7 +83,7 @@ function gamesFromRows(rows, dates, secondHalf) {
     const played = Number.isInteger(gc) && gc >= 0 && Number.isInteger(gf) && gf >= 0;
     games.push({
       jornada, casa: String(casa), fora: String(fora), data: dates.get(jornada) || null,
-      hora: null, campo: null,
+      data_prevista: dates.get(jornada) || null, hora: null, campo: null,
       golos_casa: played ? gc : null, golos_fora: played ? gf : null,
       estado: played ? 'Finalizado' : 'Agendado',
     });
@@ -64,10 +93,30 @@ function gamesFromRows(rows, dates, secondHalf) {
   }
   return games;
 }
+function applyAgenda(games, rows) {
+  const byKey = new Map(games.map(game => [gameKey(game.jornada, game.casa, game.fora), game]));
+  const seen = new Set();
+  for (const row of rows) {
+    const jornada = cell(row, 0), casa = cell(row, 1), fora = cell(row, 2);
+    if (jornada === null && !casa && !fora) continue;
+    const key = gameKey(jornada, casa, fora);
+    if (seen.has(key) || !byKey.has(key)) throw new Error('A folha Agenda tem um jogo duplicado ou desconhecido.');
+    seen.add(key);
+    const game = byKey.get(key), rawDate = cell(row, 3), rawTime = cell(row, 4);
+    const date = rawDate === null ? game.data_prevista : dateISO(rawDate);
+    const time = rawTime === null ? null : timeHHMM(rawTime);
+    if (!date || (rawTime !== null && !time)) throw new Error('Há uma data ou hora inválida na folha Agenda.');
+    game.data = date;
+    game.hora = time;
+    game.campo = cell(row, 5) === null ? null : String(cell(row, 5)).trim() || null;
+  }
+  if (seen.size !== games.length) throw new Error('Faltam jogos na folha Agenda.');
+  return games;
+}
 async function loadCampeonatoJogos() {
   // Os cabeçalhos nas linhas 60 e 114 têm texto nas colunas dos golos.
   // Consultar cada bloco à parte mantém os golos como valores numéricos.
-  const [firstA, firstB, firstC, secondA, secondB, secondC, dateRows] = await Promise.all([
+  const [firstA, firstB, firstC, secondA, secondB, secondC, dateRows, agendaRows] = await Promise.all([
     sheetQuery('Calendário', 'B7:F58'),
     sheetQuery('Calendário', 'B61:F112'),
     sheetQuery('Calendário', 'B115:F162'),
@@ -75,12 +124,14 @@ async function loadCampeonatoJogos() {
     sheetQuery('Calendário', 'N61:R112'),
     sheetQuery('Calendário', 'N115:R162'),
     sheetQuery('Datas', 'C2:D31'),
+    sheetQuery('Agenda', 'A2:F241'),
   ]);
   const dates = new Map(dateRows.map(row => [Number(cell(row, 0)), dateISO(cell(row, 1))]));
   if (dates.size !== 30 || [...dates.values()].some(value => !value)) throw new Error('Faltam datas das jornadas.');
-  return [...gamesFromRows([...firstA, ...firstB, ...firstC], dates, false),
+  const games = [...gamesFromRows([...firstA, ...firstB, ...firstC], dates, false),
     ...gamesFromRows([...secondA, ...secondB, ...secondC], dates, true)]
     .sort((a, b) => a.jornada - b.jornada);
+  return applyAgenda(games, agendaRows);
 }
 async function loadCampeonatoClassificacao() {
   const rows = await sheetQuery('Classificação', 'B4:K19');
