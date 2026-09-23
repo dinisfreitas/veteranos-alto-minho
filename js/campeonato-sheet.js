@@ -156,7 +156,8 @@ function cupGames(rows, firstNumber, count) {
     const next = rows[i + 1];
     const awayRow = next && !cell(next, 0) ? next : null;
     const home = cell(rows[i], 1), away = awayRow ? cell(awayRow, 1) : null;
-    const homeScore = cell(rows[i], 2), awayScore = awayRow ? cell(awayRow, 2) : null;
+    // Os golos ficam na quarta coluna de cada bloco (E/K/Q/W), após a coluna vazia.
+    const homeScore = cell(rows[i], 3), awayScore = awayRow ? cell(awayRow, 3) : null;
     const played = Number.isInteger(homeScore) && homeScore >= 0 && Number.isInteger(awayScore) && awayScore >= 0;
     matches.push({number: Number(match[1]), home: home ? String(home) : null,
       away: away ? String(away) : null,
@@ -172,10 +173,10 @@ async function loadCampeonatoTaca() {
   // Cada bloco contém uma fase do quadro; as linhas vazias são omitidas pelo Google Visualization.
   const [dates, first, quarters, semis, final] = await Promise.all([
     sheetQuery('Taça', 'C3:U3'),
-    sheetQuery('Taça', 'B7:D36'),
-    sheetQuery('Taça', 'H9:J34'),
-    sheetQuery('Taça', 'N13:P30'),
-    sheetQuery('Taça', 'T21:V22'),
+    sheetQuery('Taça', 'B7:E36'),
+    sheetQuery('Taça', 'H9:K34'),
+    sheetQuery('Taça', 'N13:Q30'),
+    sheetQuery('Taça', 'T21:W22'),
   ]);
   const day = dates[0];
   const rounds = [

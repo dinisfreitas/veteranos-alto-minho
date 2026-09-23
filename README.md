@@ -11,7 +11,7 @@ em `js/campeonato-sheet.js`. São consultados apenas estes intervalos:
 - `Datas!C2:D31`: data de cada jornada;
 - `Agenda!A2:F241`: data, hora e campo de cada jogo;
 - `Classificação!B4:K19`: classificação calculada na folha.
-- `Taça!C3:U3` e os blocos `B7:D36`, `H9:J34`, `N13:P30` e `T21:V22`:
+- `Taça!C3:U3` e os blocos `B7:E36`, `H9:K34`, `N13:Q30` e `T21:W22`:
   datas, jogos, emparelhamentos futuros e resultados das quatro fases.
 
 Para publicar um resultado, preencher **ambos** os golos do jogo na folha
