@@ -44,3 +44,13 @@ img{max-width:100%;display:block}.container{width:min(1120px,92vw);margin:0 auto
   .jornada-heading{align-items:flex-start;flex-direction:column;gap:4px}
   .jornada-mobile-games{display:grid;gap:10px;padding:12px}
 }
+
+.taca-note{margin:0 0 24px}
+.taca-rounds{display:grid;gap:24px}
+.taca-games{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:20px 22px}
+.taca-game{border:1px solid var(--line);border-radius:14px;padding:14px 16px;min-width:0}
+.taca-game .card-kicker{display:block;margin-bottom:8px}
+.taca-pair{display:grid;grid-template-columns:minmax(0,1fr) 36px;align-items:center;gap:12px;padding:8px 0;font-weight:800}
+.taca-pair+.taca-pair{border-top:1px solid var(--line)}
+.taca-pair strong{display:grid;place-items:center;min-height:32px;border-radius:8px;background:#f2f5ef;font-variant-numeric:tabular-nums}
+@media (max-width:640px){.taca-games{grid-template-columns:1fr;padding:14px}}

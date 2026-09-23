@@ -146,3 +146,44 @@ async function loadCampeonatoClassificacao() {
   }
   return ranking;
 }
+
+function cupGames(rows, firstNumber, count) {
+  const matches = [];
+  for (let i = 0; i < rows.length; i++) {
+    const label = cell(rows[i], 0);
+    const match = /^JOGO\s+(\d+)$/i.exec(String(label || '').trim());
+    if (!match) continue;
+    const next = rows[i + 1];
+    const awayRow = next && !cell(next, 0) ? next : null;
+    const home = cell(rows[i], 1), away = awayRow ? cell(awayRow, 1) : null;
+    const homeScore = cell(rows[i], 2), awayScore = awayRow ? cell(awayRow, 2) : null;
+    const played = Number.isInteger(homeScore) && homeScore >= 0 && Number.isInteger(awayScore) && awayScore >= 0;
+    matches.push({number: Number(match[1]), home: home ? String(home) : null,
+      away: away ? String(away) : null,
+      homeScore: played ? homeScore : null, awayScore: played ? awayScore : null});
+  }
+  if (matches.length !== count || matches.some((match, index) => match.number !== firstNumber + index)) {
+    throw new Error('O quadro da Taça está incompleto.');
+  }
+  return matches;
+}
+
+async function loadCampeonatoTaca() {
+  // Cada bloco contém uma fase do quadro; as linhas vazias são omitidas pelo Google Visualization.
+  const [dates, first, quarters, semis, final] = await Promise.all([
+    sheetQuery('Taça', 'C3:U3'),
+    sheetQuery('Taça', 'B7:D36'),
+    sheetQuery('Taça', 'H9:J34'),
+    sheetQuery('Taça', 'N13:P30'),
+    sheetQuery('Taça', 'T21:V22'),
+  ]);
+  const day = dates[0];
+  const rounds = [
+    {title:'1.ª eliminatória', date:cell(day, 0), matches:cupGames(first, 1, 8)},
+    {title:'Quartos de final', date:cell(day, 6), matches:cupGames(quarters, 9, 4)},
+    {title:'Meias-finais', date:cell(day, 12), matches:cupGames(semis, 13, 2)},
+    {title:'Final', date:cell(day, 18), matches:cupGames(final, 15, 1)},
+  ];
+  if (rounds.some(round => !round.date)) throw new Error('Faltam datas da Taça.');
+  return rounds;
+}
