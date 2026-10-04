@@ -37,3 +37,7 @@ que a consulta.
 A folha deve permitir leitura por «Qualquer pessoa com o link». Se a Google
 Sheet não responder, o site apresenta uma mensagem de indisponibilidade e
 não mostra os dados de exemplo guardados nos ficheiros JSON antigos.
+
+## Site oficial
+
+[https://veteranosaltominho.pt/](https://veteranosaltominho.pt/)
