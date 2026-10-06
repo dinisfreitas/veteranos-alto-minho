@@ -68,7 +68,7 @@ function renderTaca(container,rounds){
     '<div class="taca-games">'+round.matches.map(match=>'<article class="taca-game">'+
       '<span class="card-kicker">Jogo '+safe(match.number)+'</span>'+
       '<div class="taca-pair">'+cupTeam(match.home)+'<strong>'+safe(match.homeScore ?? '–')+'</strong></div>'+
-      '<div class="taca-pair">'+cupTeam(match.away,'away')+'<strong>'+safe(match.awayScore ?? '–')+'</strong></div>'+
+      '<div class="taca-pair">'+cupTeam(match.away)+'<strong>'+safe(match.awayScore ?? '–')+'</strong></div>'+
     '</article>').join('')+'</div>'+
   '</section>').join('');
 }
