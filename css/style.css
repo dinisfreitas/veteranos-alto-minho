@@ -75,3 +75,17 @@ img{max-width:100%;display:block}.container{width:min(1120px,92vw);margin:0 auto
 .team-card-info{min-width:0}
 .team-card-info h3{margin:0 0 8px;overflow-wrap:anywhere}
 .team-card-info p{margin:0 0 10px}
+
+
+/* Emblemas nos jogos e classificacao */
+.team-label{display:flex;align-items:center;gap:9px;min-width:0}
+.team-label strong{min-width:0;overflow-wrap:anywhere}
+.team-label.away{justify-content:flex-end;text-align:right}
+.team-emblem{width:34px;height:34px;flex:0 0 34px;object-fit:contain;padding:2px;background:#fff;border:1px solid var(--line);border-radius:50%}
+.mobile-pair .mobile-team{min-width:0;display:flex;align-items:center;justify-content:flex-start}
+.mobile-pair .mobile-team:last-child{justify-content:flex-end;text-align:right}
+.mobile-pair .team-label{gap:6px}
+.mobile-pair .team-emblem{width:27px;height:27px;flex-basis:27px}
+.mobile-card h3 .team-label{display:inline-flex;vertical-align:middle}
+.supertaca-logo{display:block;width:88px;height:88px;object-fit:contain;margin:0 auto 10px;padding:6px;background:#fff;border:1px solid var(--line);border-radius:50%}
+@media(max-width:640px){.team-emblem{width:29px;height:29px;flex-basis:29px}.match-row{gap:8px}}
