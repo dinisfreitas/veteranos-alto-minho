@@ -109,3 +109,11 @@ img{max-width:100%;display:block}.container{width:min(1120px,92vw);margin:0 auto
   .match-center{max-width:140px}
   .match-info{font-size:.76rem}
 }
+
+/* Emblemas e nomes oficiais no quadro da Taça */
+.taca-pair{align-items:center;min-width:0}
+.taca-pair .team-label{gap:7px;font-size:.9rem}
+.taca-pair .team-label strong{white-space:normal;overflow-wrap:anywhere}
+.taca-pair .team-emblem{width:28px;height:28px;flex-basis:28px}
+.taca-pair .team-label.away{justify-content:flex-start;text-align:left}
+.taca-draw-placeholder{color:var(--muted);font-weight:700;font-size:.88rem}

@@ -62,14 +62,15 @@ function renderJornadas(desktop,mobile,jogos,latestFirst=false){
   mobile.innerHTML=jornadaCards(jogos,true,latestFirst);
 }
 function renderTaca(container,rounds){
-  container.innerHTML=rounds.map(round=>`<section class="jornada-card taca-round">
-    <header class="jornada-heading"><h2>${safe(round.title)}</h2><span>${safe(dateISO(round.date) ? fmtDate(dateISO(round.date)) : round.date)}</span></header>
-    <div class="taca-games">${round.matches.map(match=>`<article class="taca-game">
-      <span class="card-kicker">Jogo ${match.number}</span>
-      <div class="taca-pair"><span>${safe(match.home || 'Equipa por sortear')}</span><strong>${match.homeScore ?? '–'}</strong></div>
-      <div class="taca-pair"><span>${safe(match.away || 'Equipa por sortear')}</span><strong>${match.awayScore ?? '–'}</strong></div>
-    </article>`).join('')}</div>
-  </section>`).join('');
+  const cupTeam=(name,align='')=>name ? teamLabel(name,align) : '<span class="taca-draw-placeholder">Equipa por sortear</span>';
+  container.innerHTML=rounds.map(round=>'<section class="jornada-card taca-round">'+
+    '<header class="jornada-heading"><h2>'+safe(round.title)+'</h2><span>'+safe(dateISO(round.date) ? fmtDate(dateISO(round.date)) : round.date)+'</span></header>'+
+    '<div class="taca-games">'+round.matches.map(match=>'<article class="taca-game">'+
+      '<span class="card-kicker">Jogo '+safe(match.number)+'</span>'+
+      '<div class="taca-pair">'+cupTeam(match.home)+'<strong>'+safe(match.homeScore ?? '–')+'</strong></div>'+
+      '<div class="taca-pair">'+cupTeam(match.away,'away')+'<strong>'+safe(match.awayScore ?? '–')+'</strong></div>'+
+    '</article>').join('')+'</div>'+
+  '</section>').join('');
 }
 function renderClassificacaoTable(el, rows, top){ const list = top ? rows.slice(0, top) : rows; el.innerHTML = `<table><thead><tr><th class="num">Pos.</th><th>Equipa</th><th class="num">J</th><th class="num">V</th><th class="num">E</th><th class="num">D</th><th class="num">GM</th><th class="num">GS</th><th class="num">DG</th><th class="num">Pts</th></tr></thead><tbody>${list.map(r=>`<tr><td class="num"><span class="rank">${r.pos}</span></td><td>${teamLabel(r.equipa)}</td><td class="num">${r.j}</td><td class="num">${r.v}</td><td class="num">${r.e}</td><td class="num">${r.d}</td><td class="num">${r.gm}</td><td class="num">${r.gs}</td><td class="num">${r.dg}</td><td class="num"><strong>${r.pts}</strong></td></tr>`).join('')}</tbody></table><div class="mobile-card">${list.map(r=>`<div class="mobile-item"><h3><span class="rank">${r.pos}</span> ${teamLabel(r.equipa)}</h3><div class="mobile-pair"><span>Jogos</span><strong>${r.j}</strong></div><div class="mobile-pair"><span>V/E/D</span><strong>${r.v}/${r.e}/${r.d}</strong></div><div class="mobile-pair"><span>Golos</span><strong>${r.gm}-${r.gs}</strong></div><div class="mobile-pair"><span>Pontos</span><strong>${r.pts}</strong></div></div>`).join('')}</div>`; }
 function renderEquipas(el, equipas){ el.innerHTML = equipas.map(e=>`<article class="card team-card"><img class="team-logo" src="${safe(e.logo)}" alt="Emblema de ${safe(e.equipa)}" loading="lazy"><div class="team-card-info"><h3>${safe(e.equipa)}</h3><p class="meta">${safe(e.localidade)} · ${safe(e.campo)}</p>${e.responsavel ? `<span class="pill">${e.responsavel_exemplo ? 'Exemplo: ' : ''}${safe(e.responsavel)}</span>` : ''}</div></article>`).join(''); }
@@ -91,7 +92,7 @@ async function initHome(){
 }
 async function initCalendario(){ try { const [jogos,equipas]=await Promise.all([loadJSON('jogos'),loadJSON('equipas')]); setTeamLogos(equipas); renderJornadas(document.querySelector('#calendario-list'),document.querySelector('#calendario-mobile'),jogos); } catch(error){ showLoadError(['#calendario-list','#calendario-mobile']); } }
 async function initResultados(){ try { const [jogos,equipas]=await Promise.all([loadJSON('jogos'),loadJSON('equipas')]); setTeamLogos(equipas); const played=jogos.filter(j=>j.estado==='Finalizado'); renderJornadas(document.querySelector('#resultados-list'),document.querySelector('#resultados-mobile'),played,true); } catch(error){ showLoadError(['#resultados-list','#resultados-mobile']); } }
-async function initTaca(){ try { renderTaca(document.querySelector('#taca-rounds'),await loadCampeonatoTaca()); } catch(error){ showLoadError(['#taca-rounds']); } }
+async function initTaca(){ try { const [rounds,equipas]=await Promise.all([loadCampeonatoTaca(),loadJSON('equipas')]); setTeamLogos(equipas); renderTaca(document.querySelector('#taca-rounds'),rounds); } catch(error){ showLoadError(['#taca-rounds']); } }
 async function initClassificacao(){ try { const [rows,equipas]=await Promise.all([loadJSON('classificacao'),loadJSON('equipas')]); setTeamLogos(equipas); renderClassificacaoTable(document.querySelector('#classificacao-table'),rows); } catch(error){ showLoadError(['#classificacao-table']); } }
 async function initEquipas(){ const rows = await loadJSON('equipas'); const el=document.querySelector('#equipas-grid'); if(el) renderEquipas(el,rows); }
 setupNav();
