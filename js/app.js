@@ -15,8 +15,26 @@ function showLoadError(ids){ ids.forEach(id => { const el=document.querySelector
 function setActiveNav(){ const page = location.pathname.split('/').pop() || 'index.html'; document.querySelectorAll('.nav-links a').forEach(a=>{ if(a.getAttribute('href')===page) a.classList.add('active'); }); }
 function setupNav(){ const nav=document.querySelector('.nav'); const btn=document.querySelector('.menu-toggle'); if(btn) btn.addEventListener('click',()=>nav.classList.toggle('open')); setActiveNav(); }
 let teamLogoMap={};
-function setTeamLogos(rows){ teamLogoMap=Object.fromEntries(rows.map(e=>[e.equipa,e.logo])); }
-function teamLabel(name,align=''){ const logo=teamLogoMap[name]; return `<span class="team-label ${align}">${align==='away'?'':logo?`<img class="team-emblem" src="${safe(logo)}" alt="" aria-hidden="true" loading="lazy">`:''}<strong>${safe(name)}</strong>${align==='away'&&logo?`<img class="team-emblem" src="${safe(logo)}" alt="" aria-hidden="true" loading="lazy">`:''}</span>`; }
+function normalizeTeamName(value){ return String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,''); }
+function setTeamLogos(rows){
+  teamLogoMap={};
+  rows.forEach(e=>{
+    const key=normalizeTeamName(e.equipa);
+    teamLogoMap[key]=e;
+    if(key.startsWith('gdrcampo')) teamLogoMap['gdcampo']=e;
+  });
+}
+function teamInfo(name){
+  const key=normalizeTeamName(name);
+  if(teamLogoMap[key]) return teamLogoMap[key];
+  const matches=Object.entries(teamLogoMap).filter(([candidate])=>candidate.length>5 && (candidate.includes(key)||key.includes(candidate))).map(([,team])=>team);
+  return matches.length===1 ? matches[0] : null;
+}
+function teamLabel(name,align=''){
+  const team=teamInfo(name), logo=team?.logo, displayName=team?.equipa || name;
+  const image=logo ? '<img class="team-emblem" src="'+safe(logo)+'" alt="" aria-hidden="true" loading="lazy">' : '';
+  return '<span class="team-label '+align+'">'+(align==='away'?'':image)+'<strong>'+safe(displayName)+'</strong>'+(align==='away'?image:'')+'</span>';
+}
 function matchRowHTML(j,showDate=false){ const changedDate = !showDate && j.data !== j.data_prevista ? `Nova data: ${fmtDate(j.data)} · ` : ''; return `<div class="match-row"><div>${teamLabel(j.casa)}<div class="meta">${showDate ? `Jornada ${j.jornada} · ${fmtDate(j.data)} · ` : changedDate}${safe(j.hora || 'Hora a definir')}</div></div><div class="score">${scoreText(j)}</div><div>${teamLabel(j.fora,'away')}<div class="meta">${safe(j.campo || 'Campo a definir')}</div></div></div>`; }
 function mobileMatchHTML(j,showDate=false){ const changedDate = !showDate && j.data !== j.data_prevista ? `Nova data: ${fmtDate(j.data)} · ` : ''; return `<div class="mobile-item"><div class="mobile-pair"><span class="mobile-team">${teamLabel(j.casa)}</span><span>${scoreText(j)}</span><span class="mobile-team">${teamLabel(j.fora,'away')}</span></div><div class="meta">${showDate ? `Jornada ${j.jornada} · ${fmtDate(j.data)} · ` : changedDate}${safe(j.hora || 'Hora a definir')} · ${safe(j.campo || 'Campo a definir')}</div><span class="pill">${safe(j.estado || 'Agendado')}</span></div>`; }
 function renderMatches(container,jogos,limit){ const list=limit ? jogos.slice(0,limit) : jogos; if(!list.length){container.innerHTML='<div class="notice">Ainda não há jogos para apresentar.</div>';return;} container.innerHTML=list.map(j=>matchRowHTML(j,true)).join(''); }
