@@ -67,3 +67,11 @@ img{max-width:100%;display:block}.container{width:min(1120px,92vw);margin:0 auto
 .taca-pair+.taca-pair{border-top:1px solid var(--line)}
 .taca-pair strong{display:grid;place-items:center;min-height:32px;border-radius:8px;background:#f2f5ef;font-variant-numeric:tabular-nums}
 @media (max-width:640px){.taca-games{grid-template-columns:1fr;padding:14px}}
+
+
+/* Emblemas dos clubes na página Equipas */
+.team-card{align-items:center;min-width:0}
+.team-logo{flex:0 0 82px;width:82px;height:82px;object-fit:contain;padding:5px;background:#fff;border:1px solid var(--line);border-radius:16px}
+.team-card-info{min-width:0}
+.team-card-info h3{margin:0 0 8px;overflow-wrap:anywhere}
+.team-card-info p{margin:0 0 10px}

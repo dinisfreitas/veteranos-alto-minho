@@ -3,96 +3,112 @@
     "equipa": "F.C. Cardielos",
     "localidade": "Cardielos",
     "campo": "Campo dos Monções",
-    "responsavel": "Organização"
+    "responsavel": "Organização",
+    "logo": "assets/equipas/fc-cardielos.webp"
   },
   {
     "equipa": "C.D. Cerveira",
     "localidade": "Vila Nova de Cerveira",
     "campo": "Estádio Rafael Pedreira",
-    "responsavel": ""
+    "responsavel": "",
+    "logo": "assets/equipas/cd-cerveira.webp"
   },
   {
     "equipa": "G.D.R. Campo",
     "localidade": "Campo",
     "campo": "Campo do G.D.R. Campo",
-    "responsavel": ""
+    "responsavel": "",
+    "logo": "assets/equipas/gdr-campo.webp"
   },
   {
     "equipa": "S.C. Vianense",
     "localidade": "Viana do Castelo",
     "campo": "Estádio Dr. José de Matos",
-    "responsavel": ""
+    "responsavel": "",
+    "logo": "assets/equipas/sc-vianense.webp"
   },
   {
     "equipa": "A.D.C. Anha",
     "localidade": "Anha",
     "campo": "Campo de Jogos Dr. José Alpuim (Sobrinho)",
-    "responsavel": ""
+    "responsavel": "",
+    "logo": "assets/equipas/adc-anha.webp"
   },
   {
     "equipa": "U.D. Lanheses",
     "localidade": "Lanheses",
     "campo": "Estádio 15 Agosto",
-    "responsavel": ""
+    "responsavel": "",
+    "logo": "assets/equipas/ud-lanheses.webp"
   },
   {
     "equipa": "A.D. Darquense",
     "localidade": "Darque",
     "campo": "Campo Sra Oliveiras",
-    "responsavel": ""
+    "responsavel": "",
+    "logo": "assets/equipas/ad-darquense.webp"
   },
   {
     "equipa": "G.D. Castelense",
     "localidade": "Castelo do Neiva",
     "campo": "Campo Beira-Mar",
-    "responsavel": ""
+    "responsavel": "",
+    "logo": "assets/equipas/gd-castelense.webp"
   },
   {
     "equipa": "A.D. Ponte da Barca",
     "localidade": "Ponte da Barca",
     "campo": "Estádio Municipal de Ponte da Barca",
-    "responsavel": ""
+    "responsavel": "",
+    "logo": "assets/equipas/ad-ponte-da-barca.webp"
   },
   {
     "equipa": "A.D.C. Correlhã",
     "localidade": "Correlhã",
     "campo": "Campo Municipal da Correlhã",
-    "responsavel": ""
+    "responsavel": "",
+    "logo": "assets/equipas/adc-correlha.webp"
   },
   {
     "equipa": "A.C.R. Arcozelo",
     "localidade": "Arcozelo",
     "campo": "Campo José Maria Oliveira Pimenta",
-    "responsavel": ""
+    "responsavel": "",
+    "logo": "assets/equipas/acr-arcozelo.webp"
   },
   {
     "equipa": "Deucriste S.C.",
     "localidade": "Deucriste",
     "campo": "Campo Barão São Fernando",
-    "responsavel": ""
+    "responsavel": "",
+    "logo": "assets/equipas/deucriste-sc.webp"
   },
   {
     "equipa": "G.D. Fragoso",
     "localidade": "Fragoso",
     "campo": "Campo 13 de Maio",
-    "responsavel": ""
+    "responsavel": "",
+    "logo": "assets/equipas/gd-fragoso.webp"
   },
   {
     "equipa": "G.D. Vitorino de Piães",
     "localidade": "Vitorino de Piães",
     "campo": "Campo Eng. Fernando Magalhães",
-    "responsavel": ""
+    "responsavel": "",
+    "logo": "assets/equipas/gd-vitorino-piaes.webp"
   },
   {
     "equipa": "Âncora-Praia F.C.",
     "localidade": "Âncora Praia",
     "campo": "Campo Paulino Velho Gomes",
-    "responsavel": ""
+    "responsavel": "",
+    "logo": "assets/equipas/ancora-praia.webp"
   },
   {
     "equipa": "A.R.C. Guilhadeses",
     "localidade": "Guilhadeses",
     "campo": "Estádio Padre Arieiro",
-    "responsavel": ""
+    "responsavel": "",
+    "logo": "assets/equipas/arc-guilhadeses.webp"
   }
 ]
