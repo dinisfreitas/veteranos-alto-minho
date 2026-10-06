@@ -89,3 +89,23 @@ img{max-width:100%;display:block}.container{width:min(1120px,92vw);margin:0 auto
 .mobile-card h3 .team-label{display:inline-flex;vertical-align:middle}
 .supertaca-logo{display:block;width:88px;height:88px;object-fit:contain;margin:0 auto 10px;padding:6px;background:#fff;border:1px solid var(--line);border-radius:50%}
 @media(max-width:640px){.team-emblem{width:29px;height:29px;flex-basis:29px}.match-row{gap:8px}}
+
+
+/* Informação do jogo alinhada por baixo do VS */
+.match-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(160px,240px) minmax(0,1fr);align-items:center;gap:16px;padding:16px 0}
+.match-home{min-width:0}
+.match-away{min-width:0;text-align:right}
+.match-center{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0;text-align:center}
+.match-info{display:flex;flex-direction:column;align-items:center;gap:2px;max-width:100%;color:var(--muted);font-size:.82rem;font-weight:700;line-height:1.35}
+.match-info>span:last-child{overflow-wrap:anywhere}
+.match-info strong{color:var(--ink)}
+.match-date{font-size:.75rem}
+.mobile-pair{align-items:center}
+.mobile-pair .score{flex:0 0 auto}
+.mobile-item>.match-info{text-align:center;margin:10px auto 0}
+.mobile-item>.pill{margin-top:8px}
+@media(max-width:640px){
+  .match-row{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;padding:12px 0}
+  .match-center{max-width:140px}
+  .match-info{font-size:.76rem}
+}

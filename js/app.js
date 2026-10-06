@@ -35,8 +35,13 @@ function teamLabel(name,align=''){
   const image=logo ? '<img class="team-emblem" src="'+safe(logo)+'" alt="" aria-hidden="true" loading="lazy">' : '';
   return '<span class="team-label '+align+'">'+(align==='away'?'':image)+'<strong>'+safe(displayName)+'</strong>'+(align==='away'?image:'')+'</span>';
 }
-function matchRowHTML(j,showDate=false){ const changedDate = !showDate && j.data !== j.data_prevista ? `Nova data: ${fmtDate(j.data)} · ` : ''; return `<div class="match-row"><div>${teamLabel(j.casa)}<div class="meta">${showDate ? `Jornada ${j.jornada} · ${fmtDate(j.data)} · ` : changedDate}${safe(j.hora || 'Hora a definir')}</div></div><div class="score">${scoreText(j)}</div><div>${teamLabel(j.fora,'away')}<div class="meta">${safe(j.campo || 'Campo a definir')}</div></div></div>`; }
-function mobileMatchHTML(j,showDate=false){ const changedDate = !showDate && j.data !== j.data_prevista ? `Nova data: ${fmtDate(j.data)} · ` : ''; return `<div class="mobile-item"><div class="mobile-pair"><span class="mobile-team">${teamLabel(j.casa)}</span><span>${scoreText(j)}</span><span class="mobile-team">${teamLabel(j.fora,'away')}</span></div><div class="meta">${showDate ? `Jornada ${j.jornada} · ${fmtDate(j.data)} · ` : changedDate}${safe(j.hora || 'Hora a definir')} · ${safe(j.campo || 'Campo a definir')}</div><span class="pill">${safe(j.estado || 'Agendado')}</span></div>`; }
+function matchInfoHTML(j,showDate=false){
+  const changedDate=!showDate && j.data !== j.data_prevista ? 'Nova data: '+fmtDate(j.data) : '';
+  const context=showDate ? 'Jornada '+safe(j.jornada)+' · '+fmtDate(j.data) : changedDate;
+  return '<div class="match-info">'+(context?'<span class="match-date">'+context+'</span>':'')+'<span><strong>'+safe(j.hora || 'Hora a definir')+'</strong><span aria-hidden="true"> · </span>'+safe(j.campo || 'Campo a definir')+'</span></div>';
+}
+function matchRowHTML(j,showDate=false){ return '<div class="match-row"><div class="match-home">'+teamLabel(j.casa)+'</div><div class="match-center"><div class="score">'+scoreText(j)+'</div>'+matchInfoHTML(j,showDate)+'</div><div class="match-away">'+teamLabel(j.fora,'away')+'</div></div>'; }
+function mobileMatchHTML(j,showDate=false){ return '<div class="mobile-item"><div class="mobile-pair"><span class="mobile-team">'+teamLabel(j.casa)+'</span><span class="score">'+scoreText(j)+'</span><span class="mobile-team">'+teamLabel(j.fora,'away')+'</span></div>'+matchInfoHTML(j,showDate)+'<span class="pill">'+safe(j.estado || 'Agendado')+'</span></div>'; }
 function renderMatches(container,jogos,limit){ const list=limit ? jogos.slice(0,limit) : jogos; if(!list.length){container.innerHTML='<div class="notice">Ainda não há jogos para apresentar.</div>';return;} container.innerHTML=list.map(j=>matchRowHTML(j,true)).join(''); }
 function jornadaCards(jogos, mobile, latestFirst=false){
   const jornadas=new Map();
