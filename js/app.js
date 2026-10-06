@@ -1,4 +1,4 @@
-const dataPath = (name) => `data/${name}.json?v=equipas-logos-20261006b`;
+const dataPath = (name) => `data/${name}.json?v=equipas-logos-20261006c`;
 const fmtDate = (value) => {
   if (!value) return "A definir";
   const d = new Date(`${value}T12:00:00`);
