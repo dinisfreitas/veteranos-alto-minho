@@ -134,19 +134,97 @@ async function loadCampeonatoJogos() {
   return applyAgenda(games, agendaRows);
 }
 async function loadCampeonatoClassificacao() {
-  const rows = await sheetQuery('Classificação', 'B4:K19');
-  const ranking = rows.map((row, index) => ({
-    pos: index + 1, equipa: cell(row, 1),
-    j: cell(row, 2), v: cell(row, 3), e: cell(row, 4), d: cell(row, 5),
-    gm: cell(row, 6), gs: cell(row, 7), dg: cell(row, 8), pts: cell(row, 9),
-  }));
-  if (ranking.length !== 16 || ranking.some(row => !row.equipa ||
-    [row.j, row.v, row.e, row.d, row.gm, row.gs, row.dg, row.pts].some(n => !Number.isFinite(n)))) {
-    throw new Error('A classificação da folha está incompleta.');
+  const [games, response] = await Promise.all([
+    loadCampeonatoJogos(),
+    fetch('data/equipas.json?v=desempate-20261010').then(result => {
+      if (!result.ok) throw new Error('Não foi possível ler a lista de equipas.');
+      return result.json();
+    }),
+  ]);
+  const normalize = value => String(value || '').normalize('NFD').replace(/[\\u0300-\\u036f]/g, '')
+    .toLowerCase().replace(/[^a-z0-9]/g, '');
+  const aliases = {
+    'FC Cardielos': 'F.C. Cardielos', 'UD Lanheses': 'U.D. Lanheses',
+    'AD Darquense': 'A.D. Darquense', 'GD Castelense': 'G.D. Castelense',
+    'ADC Anha': 'A.D.C. Anha', 'ADC Correlhã': 'A.D.C. Correlhã',
+    'ACR Arcozelo': 'A.C.R. Arcozelo', 'CD Cerveira': 'C.D. Cerveira',
+    'GD Fragoso': 'G.D. Fragoso', 'GDR Campo': 'G.D.R. Campo',
+    'SC Vianense': 'S.C. Vianense', 'Deucriste SC': 'Deucriste S.C.',
+    'GD Vitorino de Piães': 'G.D. Vitorino de Piães',
+    'Âncora Praia FC': 'Âncora-Praia F.C.', 'AD Ponte da Barca': 'A.D. Ponte da Barca',
+    'ARC Guilhadeses': 'A.R.C. Guilhadeses',
+  };
+  const canonical = new Map(response.map(team => [normalize(team.equipa), team.equipa]));
+  for (const [alias, official] of Object.entries(aliases)) canonical.set(normalize(alias), official);
+  const stats = new Map(response.map(team => [team.equipa, {
+    pos: 0, equipa: team.equipa, j: 0, v: 0, e: 0, d: 0, gm: 0, gs: 0, dg: 0, pts: 0,
+  }]));
+  const played = [];
+  for (const game of games) {
+    if (game.golos_casa === null || game.golos_fora === null) continue;
+    const home = canonical.get(normalize(game.casa)), away = canonical.get(normalize(game.fora));
+    if (!home || !away || home === away) throw new Error('Há uma equipa desconhecida nos resultados.');
+    const h = stats.get(home), a = stats.get(away), hg = game.golos_casa, ag = game.golos_fora;
+    h.j++; a.j++; h.gm += hg; h.gs += ag; a.gm += ag; a.gs += hg;
+    if (hg > ag) { h.v++; h.pts += 3; a.d++; }
+    else if (hg < ag) { a.v++; a.pts += 3; h.d++; }
+    else { h.e++; a.e++; h.pts++; a.pts++; }
+    played.push({ home, away, hg, ag });
   }
-  return ranking;
+  for (const row of stats.values()) row.dg = row.gm - row.gs;
+  const headToHead = (group, team, metric) => {
+    const members = new Set(group.map(row => row.equipa));
+    let value = 0;
+    for (const game of played) {
+      if (!members.has(game.home) || !members.has(game.away)) continue;
+      if (metric === 'points') {
+        if (game.home === team) value += game.hg > game.ag ? 3 : game.hg === game.ag ? 1 : 0;
+        if (game.away === team) value += game.ag > game.hg ? 3 : game.ag === game.hg ? 1 : 0;
+      } else if (game.home === team) value += game.hg - game.ag;
+      else if (game.away === team) value += game.ag - game.hg;
+    }
+    return value;
+  };
+  const groupBy = (group, key) => {
+    const buckets = new Map();
+    for (const row of group) {
+      const value = key(row);
+      if (!buckets.has(value)) buckets.set(value, []);
+      buckets.get(value).push(row);
+    }
+    return [...buckets].sort((a, b) => b[0] - a[0]).map(([, rows]) => rows);
+  };
+  const byPoints = groupBy([...stats.values()], row => row.pts);
+  const ordered = [], tiedGroups = [];
+  for (const pointsGroup of byPoints) {
+    const byDirectPoints = groupBy(pointsGroup, row => headToHead(pointsGroup, row.equipa, 'points'));
+    for (const directGroup of byDirectPoints) {
+      let groups = [directGroup];
+      const twoLegsPlayed = directGroup.every((row, i) => directGroup.slice(i + 1).every(other =>
+        played.filter(game => (game.home === row.equipa && game.away === other.equipa) ||
+          (game.home === other.equipa && game.away === row.equipa)).length >= 2));
+      if (twoLegsPlayed) groups = groups.flatMap(group =>
+        groupBy(group, row => headToHead(group, row.equipa, 'difference')));
+      for (const group of groups) {
+        for (const goalDifferenceGroup of groupBy(group, row => row.dg)) {
+          for (const winsGroup of groupBy(goalDifferenceGroup, row => row.v)) {
+            for (const goalsGroup of groupBy(winsGroup, row => row.gm)) {
+              const alphabetical = goalsGroup.sort((a, b) => a.equipa.localeCompare(b.equipa, 'pt'));
+              ordered.push(...alphabetical);
+              tiedGroups.push(alphabetical);
+            }
+          }
+        }
+      }
+    }
+  }
+  let position = 1;
+  for (const group of tiedGroups) {
+    group.forEach(row => { row.pos = position; });
+    position += group.length;
+  }
+  return ordered;
 }
-
 function cupGames(rows, firstNumber, count) {
   const matches = [];
   for (let i = 0; i < rows.length; i++) {
