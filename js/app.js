@@ -72,7 +72,26 @@ function renderTaca(container,rounds){
     '</article>').join('')+'</div>'+
   '</section>').join('');
 }
-function renderClassificacaoTable(el, rows, top){ const list = top ? rows.slice(0, top) : rows; el.innerHTML = `<table><thead><tr><th class="num">Pos.</th><th>Equipa</th><th class="num">J</th><th class="num">V</th><th class="num">E</th><th class="num">D</th><th class="num">GM</th><th class="num">GS</th><th class="num">DG</th><th class="num">Pts</th></tr></thead><tbody>${list.map(r=>`<tr><td class="num"><span class="rank">${r.pos}</span></td><td>${teamLabel(r.equipa)}</td><td class="num">${r.j}</td><td class="num">${r.v}</td><td class="num">${r.e}</td><td class="num">${r.d}</td><td class="num">${r.gm}</td><td class="num">${r.gs}</td><td class="num">${r.dg}</td><td class="num"><strong>${r.pts}</strong></td></tr>`).join('')}</tbody></table><div class="mobile-card">${list.map(r=>`<div class="mobile-item"><h3><span class="rank">${r.pos}</span> ${teamLabel(r.equipa)}</h3><div class="mobile-pair"><span>Jogos</span><strong>${r.j}</strong></div><div class="mobile-pair"><span>V/E/D</span><strong>${r.v}/${r.e}/${r.d}</strong></div><div class="mobile-pair"><span>Golos</span><strong>${r.gm}-${r.gs}</strong></div><div class="mobile-pair"><span>Pontos</span><strong>${r.pts}</strong></div></div>`).join('')}</div>`; }
+function renderClassificacaoTable(el, rows, top){
+  let list = top ? rows.slice(0, top) : rows;
+  while (top && list.length < rows.length && list.length &&
+    rows[list.length].pos === list[list.length - 1].pos) list.push(rows[list.length]);
+  const position = value => String(value) + 'º';
+  const body = list.map(r => '<tr><td class="num"><span class="rank">' + position(r.pos) +
+    '</span></td><td>' + teamLabel(r.equipa) + '</td><td class="num">' + r.j +
+    '</td><td class="num">' + r.v + '</td><td class="num">' + r.e + '</td><td class="num">' + r.d +
+    '</td><td class="num">' + r.gm + '</td><td class="num">' + r.gs + '</td><td class="num">' + r.dg +
+    '</td><td class="num"><strong>' + r.pts + '</strong></td></tr>').join('');
+  const mobile = list.map(r => '<div class="mobile-item"><h3><span class="rank">' + position(r.pos) +
+    '</span> ' + teamLabel(r.equipa) + '</h3><div class="mobile-pair"><span>Jogos</span><strong>' + r.j +
+    '</strong></div><div class="mobile-pair"><span>V/E/D</span><strong>' + r.v + '/' + r.e + '/' + r.d +
+    '</strong></div><div class="mobile-pair"><span>Golos</span><strong>' + r.gm + '-' + r.gs +
+    '</strong></div><div class="mobile-pair"><span>Pontos</span><strong>' + r.pts + '</strong></div></div>').join('');
+  el.innerHTML = '<table><thead><tr><th class="num">Pos.</th><th>Equipa</th><th class="num">J</th>' +
+    '<th class="num">V</th><th class="num">E</th><th class="num">D</th><th class="num">GM</th>' +
+    '<th class="num">GS</th><th class="num">DG</th><th class="num">Pts</th></tr></thead><tbody>' +
+    body + '</tbody></table><div class="mobile-card">' + mobile + '</div>';
+}
 function renderEquipas(el, equipas){ el.innerHTML = equipas.map(e=>`<article class="card team-card"><img class="team-logo" src="${safe(e.logo)}" alt="Emblema de ${safe(e.equipa)}" loading="lazy"><div class="team-card-info"><h3>${safe(e.equipa)}</h3><p class="meta">${safe(e.localidade)} · ${safe(e.campo)}</p>${e.responsavel ? `<span class="pill">${e.responsavel_exemplo ? 'Exemplo: ' : ''}${safe(e.responsavel)}</span>` : ''}</div></article>`).join(''); }
 async function initHome(){
   const [jogosResult, classificacaoResult, comunicadosResult, equipasResult] = await Promise.allSettled([loadJSON('jogos'),loadJSON('classificacao'),loadJSON('comunicados'),loadJSON('equipas')]);
