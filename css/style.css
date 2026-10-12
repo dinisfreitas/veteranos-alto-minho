@@ -116,3 +116,5 @@ img{max-width:100%;display:block}.container{width:min(1120px,92vw);margin:0 auto
 .taca-pair .team-label strong{white-space:normal;overflow-wrap:anywhere}
 .taca-pair .team-emblem{width:28px;height:28px;flex-basis:28px}
 .taca-draw-placeholder{color:var(--muted);font-weight:700;font-size:.88rem}
+
+.match-status-pending{background:#fff7df;color:#805300;border-color:#e8c76c}.match-status-confirmed{background:#ecfdf3;color:#17670d;border-color:#bff0b5}.match-status-finished{background:#f3f4f6;color:#4b5563;border-color:#d1d5db}.match-center>.pill{margin-top:8px;white-space:normal;text-align:center;justify-content:center}

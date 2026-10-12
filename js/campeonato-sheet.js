@@ -109,6 +109,11 @@ function applyAgenda(games, rows) {
     game.data = date;
     game.hora = time;
     game.campo = cell(row, 5) === null ? null : String(cell(row, 5)).trim() || null;
+    // Na Agenda, n indica horário por confirmar; uma célula vazia confirma-o.
+    game.confirmado = String(cell(row, 6) ?? '').trim() === '';
+    if (game.estado !== 'Finalizado') {
+      game.estado = game.confirmado ? 'Horário confirmado' : 'Horário por confirmar';
+    }
   }
   if (seen.size !== games.length) throw new Error('Faltam jogos na folha Agenda.');
   return games;
@@ -124,7 +129,7 @@ async function loadCampeonatoJogos() {
     sheetQuery('Calendário', 'N61:R112'),
     sheetQuery('Calendário', 'N115:R162'),
     sheetQuery('Datas', 'C2:D31'),
-    sheetQuery('Agenda', 'A2:F241'),
+    sheetQuery('Agenda', 'A2:G241'),
   ]);
   const dates = new Map(dateRows.map(row => [Number(cell(row, 0)), dateISO(cell(row, 1))]));
   if (dates.size !== 30 || [...dates.values()].some(value => !value)) throw new Error('Faltam datas das jornadas.');
