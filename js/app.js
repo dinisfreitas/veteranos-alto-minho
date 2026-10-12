@@ -87,11 +87,11 @@ function renderClassificacaoTable(el, rows, top){
     '</td><td class="num">' + r.v + '</td><td class="num">' + r.e + '</td><td class="num">' + r.d +
     '</td><td class="num">' + r.gm + '</td><td class="num">' + r.gs + '</td><td class="num">' + r.dg +
     '</td><td class="num"><strong>' + r.pts + '</strong></td></tr>').join('');
-  const mobile = list.map(r => '<div class="mobile-item"><h3><span class="rank">' + position(r.pos) +
-    '</span> ' + teamLabel(r.equipa) + '</h3><div class="mobile-pair"><span>Jogos</span><strong>' + r.j +
-    '</strong></div><div class="mobile-pair"><span>V/E/D</span><strong>' + r.v + '/' + r.e + '/' + r.d +
-    '</strong></div><div class="mobile-pair"><span>Golos</span><strong>' + r.gm + '-' + r.gs +
-    '</strong></div><div class="mobile-pair"><span>Pontos</span><strong>' + r.pts + '</strong></div></div>').join('');
+  const mobile = list.map(r => '<div class="mobile-item standings-item"><h3><span class="rank">' + position(r.pos) +
+    '</span> ' + teamLabel(r.equipa) + '<span class="standings-points"><strong>' + r.pts + '</strong><small>pts</small></span></h3><div class="standings-stats">' +
+    '<span>Jogos <strong>' + r.j + '</strong></span><span>V/E/D <strong>' + r.v + '/' + r.e + '/' + r.d +
+    '</strong></span><span>Golos <strong>' + r.gm + '–' + r.gs + '</strong></span>' +
+    '</div></div>').join('');
   el.innerHTML = '<table><thead><tr><th class="num">Pos.</th><th>Equipa</th><th class="num">J</th>' +
     '<th class="num">V</th><th class="num">E</th><th class="num">D</th><th class="num">GM</th>' +
     '<th class="num">GS</th><th class="num">DG</th><th class="num">Pts</th></tr></thead><tbody>' +
@@ -105,11 +105,9 @@ async function initHome(){
     const jogos = jogosResult.value;
     const next = jogos.find(j => j.estado !== 'Finalizado');
     const upcoming = next ? jogos.filter(j => j.jornada === next.jornada) : [];
-    const results = jogos.filter(j => j.estado === 'Finalizado');
     renderJornadas(document.querySelector('#proxima-jornada'),document.querySelector('#proxima-jornada-mobile'),upcoming);
-    renderMatches(document.querySelector('#ultimos-resultados'), results.slice(-3).reverse());
-  } else showLoadError(['#proxima-jornada','#proxima-jornada-mobile','#ultimos-resultados']);
-  if(classificacaoResult.status === 'fulfilled') renderClassificacaoTable(document.querySelector('#classificacao-top'), classificacaoResult.value, 5);
+  } else showLoadError(['#proxima-jornada','#proxima-jornada-mobile']);
+  if(classificacaoResult.status === 'fulfilled') renderClassificacaoTable(document.querySelector('#classificacao-top'), classificacaoResult.value, 8);
   else showLoadError(['#classificacao-top']);
   const com=document.querySelector('#ultimo-comunicado'), comunicados=comunicadosResult.status === 'fulfilled' ? comunicadosResult.value : [];
   if(com && comunicados[0]) com.innerHTML=`<div class="card"><div class="card-kicker">${safe(comunicados[0].tipo)} · ${fmtDate(comunicados[0].data)}</div><h3>${safe(comunicados[0].titulo)}</h3><p>${safe(comunicados[0].texto)}</p></div>`;

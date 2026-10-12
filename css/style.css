@@ -135,3 +135,14 @@ img{max-width:100%;display:block}.container{width:min(1120px,92vw);margin:0 auto
   .mobile-pair .team-label.away{align-items:flex-end}
   .mobile-pair .team-label.away .team-emblem{order:-1}
 }
+
+@media(max-width:820px){
+  .standings-item h3{display:flex;align-items:center;gap:8px}
+  .standings-item h3 .rank{flex:none}
+  .standings-item h3 .team-label{display:flex;flex:1;min-width:0}
+  .standings-stats{display:flex;align-items:center;justify-content:space-between;gap:6px;border-top:1px solid var(--line);padding-top:8px;font-size:.75rem;white-space:nowrap;color:var(--muted);font-variant-numeric:tabular-nums}
+  .standings-stats strong{color:var(--ink)}
+  .standings-points{display:flex;align-items:baseline;justify-content:center;gap:3px;flex:none;min-width:46px;background:#111;color:#fff;border-radius:10px;padding:6px 7px;white-space:nowrap}
+  .standings-points strong{font-size:1.125rem;font-weight:900;color:#fff}
+  .standings-points small{font-size:.6875rem;font-weight:700;color:#fff}
+}
