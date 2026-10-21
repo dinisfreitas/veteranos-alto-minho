@@ -97,7 +97,7 @@ function renderClassificacaoTable(el, rows, top){
     '<th class="num">GS</th><th class="num">DG</th><th class="num">Pts</th></tr></thead><tbody>' +
     body + '</tbody></table><div class="mobile-card">' + mobile + '</div>';
 }
-function renderEquipas(el, equipas){ el.innerHTML = equipas.map(e=>`<article class="card team-card"><img class="team-logo" src="${safe(e.logo)}" alt="Emblema de ${safe(e.equipa)}" loading="lazy"><div class="team-card-info"><h3>${safe(e.equipa)}</h3><p class="meta">${safe(e.localidade)} · ${safe(e.campo)}</p>${e.responsavel ? `<span class="pill">${e.responsavel_exemplo ? 'Exemplo: ' : ''}${safe(e.responsavel)}</span>` : ''}</div></article>`).join(''); }
+function renderEquipas(el, equipas){ el.innerHTML = equipas.map(e=>`<article class="card team-card"><img class="team-logo" src="${safe(e.logo)}" alt="Emblema de ${safe(e.equipa)}" loading="lazy"><div class="team-card-info"><h3>${safe(e.equipa)}</h3><p class="meta">${safe(e.localidade)} · ${safe(e.campo)}</p><a class="btn btn-dark" style="margin-top:12px;padding:9px 14px" href="equipa.html?equipa=${encodeURIComponent(e.equipa)}" aria-label="Ver jogos de ${safe(e.equipa)}">Resumo e jogos</a>${e.responsavel ? `<span class="pill">${e.responsavel_exemplo ? 'Exemplo: ' : ''}${safe(e.responsavel)}</span>` : ''}</div></article>`).join(''); }
 async function initHome(){
   const [jogosResult, classificacaoResult, comunicadosResult, equipasResult] = await Promise.allSettled([loadJSON('jogos'),loadJSON('classificacao'),loadJSON('comunicados'),loadJSON('equipas')]);
   if(equipasResult.status==='fulfilled') setTeamLogos(equipasResult.value);
@@ -119,3 +119,4 @@ async function initClassificacao(){ try { const [rows,equipas]=await Promise.all
 async function initEquipas(){ const rows = await loadJSON('equipas'); const el=document.querySelector('#equipas-grid'); if(el) renderEquipas(el,rows); }
 setupNav();
 window.siteInit = { initHome, initCalendario, initResultados, initTaca, initClassificacao, initEquipas };
+
