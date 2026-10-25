@@ -98,14 +98,29 @@ function renderClassificacaoTable(el, rows, top){
     body + '</tbody></table><div class="mobile-card">' + mobile + '</div>';
 }
 function renderEquipas(el, equipas){ el.innerHTML = equipas.map(e=>`<article class="card team-card"><img class="team-logo" src="${safe(e.logo)}" alt="Emblema de ${safe(e.equipa)}" loading="lazy"><div class="team-card-info"><h3>${safe(e.equipa)}</h3><p class="meta">${safe(e.localidade)} · ${safe(e.campo)}</p><a class="btn btn-dark" style="margin-top:12px;padding:9px 14px" href="equipa.html?equipa=${encodeURIComponent(e.equipa)}" aria-label="Ver jogos de ${safe(e.equipa)}">Resumo e jogos</a>${e.responsavel ? `<span class="pill">${e.responsavel_exemplo ? 'Exemplo: ' : ''}${safe(e.responsavel)}</span>` : ''}</div></article>`).join(''); }
+function homeFeaturedRound(jogos){
+  const rounds = [...new Set(jogos.map(j => j.jornada))].sort((a,b) => a-b);
+  const next = rounds.find(round => jogos.some(j => j.jornada === round && j.estado !== 'Finalizado'));
+  const candidate = jogos.filter(j => j.jornada === next);
+  // Só avançar quando há um horário confirmado ou a jornada já começou.
+  if(candidate.some(j => j.confirmado === true || j.estado === 'Horário confirmado' || j.estado === 'Finalizado')){
+    return { jogos: candidate, resultados: candidate.every(j => j.estado === 'Finalizado') };
+  }
+  const previous = rounds.filter(round => (next === undefined || round < next) &&
+    jogos.some(j => j.jornada === round && j.estado === 'Finalizado')).pop();
+  return { jogos: jogos.filter(j => j.jornada === previous), resultados: true };
+}
 async function initHome(){
   const [jogosResult, classificacaoResult, comunicadosResult, equipasResult] = await Promise.allSettled([loadJSON('jogos'),loadJSON('classificacao'),loadJSON('comunicados'),loadJSON('equipas')]);
   if(equipasResult.status==='fulfilled') setTeamLogos(equipasResult.value);
   if(jogosResult.status === 'fulfilled'){
     const jogos = jogosResult.value;
-    const next = jogos.find(j => j.estado !== 'Finalizado');
-    const upcoming = next ? jogos.filter(j => j.jornada === next.jornada) : [];
-    renderJornadas(document.querySelector('#proxima-jornada'),document.querySelector('#proxima-jornada-mobile'),upcoming);
+    const featured = homeFeaturedRound(jogos);
+    const title = document.querySelector('#jornada-destaque-titulo');
+    const description = document.querySelector('#jornada-destaque-descricao');
+    if(title) title.textContent = featured.resultados ? 'Última jornada' : 'Próxima jornada';
+    if(description) description.textContent = featured.resultados ? 'Resultados da última jornada disputada.' : 'Jogos agendados para a competição.';
+    renderJornadas(document.querySelector('#proxima-jornada'),document.querySelector('#proxima-jornada-mobile'),featured.jogos);
   } else showLoadError(['#proxima-jornada','#proxima-jornada-mobile']);
   if(classificacaoResult.status === 'fulfilled') renderClassificacaoTable(document.querySelector('#classificacao-top'), classificacaoResult.value, 8);
   else showLoadError(['#classificacao-top']);
