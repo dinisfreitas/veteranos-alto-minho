@@ -146,3 +146,8 @@ img{max-width:100%;display:block}.container{width:min(1120px,92vw);margin:0 auto
   .standings-points strong{font-size:1.125rem;font-weight:900;color:#fff}
   .standings-points small{font-size:.6875rem;font-weight:700;color:#fff}
 }
+
+/* Ligações aos resumos dos clubes, sem alterar o alinhamento dos emblemas. */
+.club-link{color:inherit;text-decoration:none}
+.club-link:hover{text-decoration:underline;text-underline-offset:3px}
+.club-link:focus-visible{outline:2px solid currentColor;outline-offset:3px;border-radius:4px}

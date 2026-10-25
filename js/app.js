@@ -33,7 +33,9 @@ function teamInfo(name){
 function teamLabel(name,align=''){
   const team=teamInfo(name), logo=team?.logo, displayName=team?.equipa || name;
   const image=logo ? '<img class="team-emblem" src="'+safe(logo)+'" alt="" aria-hidden="true" loading="lazy">' : '';
-  return '<span class="team-label '+align+'">'+(align==='away'?'':image)+'<strong>'+safe(displayName)+'</strong>'+(align==='away'?image:'')+'</span>';
+  const contents=(align==='away'?'':image)+'<strong>'+safe(displayName)+'</strong>'+(align==='away'?image:'');
+  if(!team) return '<span class="team-label '+align+'">'+contents+'</span>';
+  return '<a class="team-label club-link '+align+'" href="equipa.html?equipa='+safe(encodeURIComponent(displayName))+'">'+contents+'</a>';
 }
 function matchInfoHTML(j,showDate=false){
   const changedDate=!showDate && j.data !== j.data_prevista ? 'Nova data: '+fmtDate(j.data) : '';
@@ -97,7 +99,7 @@ function renderClassificacaoTable(el, rows, top){
     '<th class="num">GS</th><th class="num">DG</th><th class="num">Pts</th></tr></thead><tbody>' +
     body + '</tbody></table><div class="mobile-card">' + mobile + '</div>';
 }
-function renderEquipas(el, equipas){ el.innerHTML = equipas.map(e=>`<article class="card team-card"><img class="team-logo" src="${safe(e.logo)}" alt="Emblema de ${safe(e.equipa)}" loading="lazy"><div class="team-card-info"><h3>${safe(e.equipa)}</h3><p class="meta">${safe(e.localidade)} · ${safe(e.campo)}</p><a class="btn btn-dark" style="margin-top:12px;padding:9px 14px" href="equipa.html?equipa=${encodeURIComponent(e.equipa)}" aria-label="Ver jogos de ${safe(e.equipa)}">Resumo e jogos</a>${e.responsavel ? `<span class="pill">${e.responsavel_exemplo ? 'Exemplo: ' : ''}${safe(e.responsavel)}</span>` : ''}</div></article>`).join(''); }
+function renderEquipas(el, equipas){ el.innerHTML = equipas.map(e=>`<article class="card team-card"><img class="team-logo" src="${safe(e.logo)}" alt="Emblema de ${safe(e.equipa)}" loading="lazy"><div class="team-card-info"><h3><a class="club-link" href="equipa.html?equipa=${safe(encodeURIComponent(e.equipa))}">${safe(e.equipa)}</a></h3><p class="meta">${safe(e.localidade)} · ${safe(e.campo)}</p><a class="btn btn-dark" style="margin-top:12px;padding:9px 14px" href="equipa.html?equipa=${encodeURIComponent(e.equipa)}" aria-label="Ver jogos de ${safe(e.equipa)}">Resumo e jogos</a>${e.responsavel ? `<span class="pill">${e.responsavel_exemplo ? 'Exemplo: ' : ''}${safe(e.responsavel)}</span>` : ''}</div></article>`).join(''); }
 function homeFeaturedRound(jogos){
   const rounds = [...new Set(jogos.map(j => j.jornada))].sort((a,b) => a-b);
   const next = rounds.find(round => jogos.some(j => j.jornada === round && j.estado !== 'Finalizado'));
