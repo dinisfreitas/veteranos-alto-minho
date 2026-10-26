@@ -151,3 +151,22 @@ img{max-width:100%;display:block}.container{width:min(1120px,92vw);margin:0 auto
 .club-link{color:inherit;text-decoration:none}
 .club-link:hover{text-decoration:underline;text-underline-offset:3px}
 .club-link:focus-visible{outline:2px solid currentColor;outline-offset:3px;border-radius:4px}
+
+/* Menu de PC numa única linha; menu recolhido quando falta largura. */
+@media(min-width:1021px){
+  .site-header .nav{width:min(1280px,94vw);gap:16px;flex-wrap:nowrap;align-items:center}
+  .nav .brand{flex:0 0 180px;font-size:.9rem}
+  .nav-links{flex-wrap:nowrap;gap:2px;width:auto}
+  .nav-links a{white-space:nowrap;font-size:.8rem;padding:10px 7px}
+}
+@media(min-width:1200px){
+  .nav-links a{font-size:.86rem;padding:10px}
+}
+@media(min-width:821px) and (max-width:1020px){
+  .nav{align-items:center}
+  .menu-toggle{display:block}
+  .nav-links{display:none;width:100%;flex-direction:column;align-items:stretch}
+  .nav.open{flex-wrap:wrap}
+  .nav.open .nav-links{display:flex}
+  .nav-links a{border-radius:12px;background:#f3f4f6}
+}
