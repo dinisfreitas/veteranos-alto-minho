@@ -100,17 +100,36 @@ function renderClassificacaoTable(el, rows, top){
     body + '</tbody></table><div class="mobile-card">' + mobile + '</div>';
 }
 function renderEquipas(el, equipas){ el.innerHTML = equipas.map(e=>`<article class="card team-card"><img class="team-logo" src="${safe(e.logo)}" alt="Emblema de ${safe(e.equipa)}" loading="lazy"><div class="team-card-info"><h3><a class="club-link" href="equipa.html?equipa=${safe(encodeURIComponent(e.equipa))}">${safe(e.equipa)}</a></h3><p class="meta">${safe(e.localidade)} · ${safe(e.campo)}</p><a class="btn btn-dark" style="margin-top:12px;padding:9px 14px" href="equipa.html?equipa=${encodeURIComponent(e.equipa)}" aria-label="Ver jogos de ${safe(e.equipa)}">Resumo e jogos</a>${e.responsavel ? `<span class="pill">${e.responsavel_exemplo ? 'Exemplo: ' : ''}${safe(e.responsavel)}</span>` : ''}</div></article>`).join(''); }
-function homeFeaturedRound(jogos){
-  const rounds = [...new Set(jogos.map(j => j.jornada))].sort((a,b) => a-b);
-  const next = rounds.find(round => jogos.some(j => j.jornada === round && j.estado !== 'Finalizado'));
-  const candidate = jogos.filter(j => j.jornada === next);
-  // Só avançar quando há um horário confirmado ou a jornada já começou.
-  if(candidate.some(j => j.confirmado === true || j.estado === 'Horário confirmado' || j.estado === 'Finalizado')){
-    return { jogos: candidate, resultados: candidate.every(j => j.estado === 'Finalizado') };
+function homeFeaturedRound(jogos, now = new Date()){
+  const groups = new Map();
+  for(const jogo of jogos){
+    if(!groups.has(jogo.jornada)) groups.set(jogo.jornada, []);
+    groups.get(jogo.jornada).push(jogo);
   }
-  const previous = rounds.filter(round => (next === undefined || round < next) &&
-    jogos.some(j => j.jornada === round && j.estado === 'Finalizado')).pop();
-  return { jogos: jogos.filter(j => j.jornada === previous), resultados: true };
+  const rounds = [...groups.keys()].sort((a,b) => a-b);
+  const parts = new Intl.DateTimeFormat('en-GB', {timeZone:'Europe/Lisbon',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);
+  const part = type => parts.find(p => p.type === type).value;
+  const today = `${part('year')}-${part('month')}-${part('day')}`;
+  let index = 0;
+  for(let i = 1; i < rounds.length; i++){
+    const nominal = groups.get(rounds[i-1]).find(j => j.data_prevista)?.data_prevista;
+    if(!nominal) break;
+    const monday = new Date(nominal + 'T00:00:00Z');
+    if(!Number.isFinite(monday.getTime())) break;
+    monday.setUTCDate(monday.getUTCDate() + (8 - monday.getUTCDay()) % 7 + (monday.getUTCDay() === 1 ? 7 : 0));
+    if(monday.toISOString().slice(0,10) > today) break;
+    index = i;
+  }
+  const finished = j => j.estado === 'Finalizado';
+  let candidate = groups.get(rounds[index]) || [];
+  const next = groups.get(rounds[index+1]);
+  if(candidate.length && candidate.every(finished) && next?.some(j => j.confirmado === true || j.estado === 'Horário confirmado' || finished(j))){
+    candidate = next;
+  }
+  if(index === 0 && candidate === groups.get(rounds[0]) && !candidate.some(j => j.confirmado === true || j.estado === 'Horário confirmado' || finished(j))){
+    candidate = [];
+  }
+  return { jogos: candidate, resultados: candidate.every(finished) };
 }
 async function initHome(){
   const [jogosResult, classificacaoResult, comunicadosResult, equipasResult] = await Promise.allSettled([loadJSON('jogos'),loadJSON('classificacao'),loadJSON('comunicados'),loadJSON('equipas')]);
